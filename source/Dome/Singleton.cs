@@ -5,7 +5,7 @@ namespace Dome
 {
 	public static class Singleton<T> where T : class
 	{
-		private static T instance = null;
+		private static volatile T instance = null;
 
 		/// <summary>
 		/// 
@@ -16,6 +16,7 @@ namespace Dome
 		/// <remarks>In the highly unlikely event that more than one thread tries to call this method for the first time simultaneously, it is possible for more than one instance of <typeparamref name="T" /> to be created, but the same instance will still be returned on each thread.</remarks>
 		public static T GetLazilyInitializedInstance(Func<T> factoryMethod = null)
 		{
+			Thread.MemoryBarrier();
 			if (instance == null)
 			{
 				T instance;
@@ -26,7 +27,7 @@ namespace Dome
 
 				Interlocked.CompareExchange(ref Singleton<T>.instance, instance, null);
 			}
-
+			
 			return instance;
 		}
 	}

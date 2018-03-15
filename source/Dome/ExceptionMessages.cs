@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utilities
+namespace Dome
 {
 	/// <summary>
 	/// Frequently occurring exception messages.

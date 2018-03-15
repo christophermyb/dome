@@ -2,18 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Utilities.Collections
+namespace Dome.Collections
 {
 	/// <summary>
 	/// Queues items in an order determined by a priority associated with each item.
 	/// </summary>
 	/// <typeparam name="TItem">The type of the items in the queue.</typeparam>
 	/// <typeparam name="TPriority"></typeparam>
-	public class PriorityQueue<TItem, TPriority> : IReadOnlyCollection<TItem>
+	public class PriorityQueue<TItem, TPriority> : IQueue<TItem>
 	{
-		private static readonly TItem[] EmptyItemArray = new TItem[0];
-		private static readonly TPriority[] EmptyPriorityArray = new TPriority[0];
-
 		private readonly IComparer<TPriority> priorityComparer;
 
 		private TPriority[] priorities;
@@ -39,8 +36,8 @@ namespace Utilities.Collections
 			}
 			else
 			{
-				priorities = EmptyPriorityArray;
-				items = EmptyItemArray;
+				priorities = ArrayUtils.GetEmpty<TPriority>();
+				items = ArrayUtils.GetEmpty<TItem>();
 			}
 		}
 
@@ -83,16 +80,34 @@ namespace Utilities.Collections
 			}
 			else
 			{
-				ArrayUtils.Insert(priorities, count, index, priority);
-				ArrayUtils.Insert(items, count, index, item);
+				priorities.Insert(count, index, priority);
+				items.Insert(count, index, item);
 			}
 
 			++count;
 			IncVersion();
 		}
 
+		void IQueue<TItem>.Enqueue(TItem item)
+		{
+			Enqueue(item, default(TPriority));
+		}
+
+		private void DequeueImpl(out TItem item)
+		{
+			int index = count - 1;
+			item = items[index];
+
+			// Clear these array elements to avoid potentially obstructing garbage collection of otherwise unreferenced objects.
+			items[index] = default(TItem);
+			priorities[index] = default(TPriority);
+
+			--count;
+			IncVersion();
+		}
+
 		/// <summary>
-		/// Retrieves the item at the front of the queue.
+		/// Removes the item at the front of the queue.
 		/// </summary>
 		/// <returns>The item removed from the front of the queue.</returns>
 		/// <exception cref="InvalidOperationException"></exception>
@@ -101,21 +116,31 @@ namespace Utilities.Collections
 			if (count == 0)
 				throw new InvalidOperationException(ExceptionMessages.CollectionIsEmpty);
 
-			int index = count - 1;
-			TItem item = items[index];
-
-			// Clear these array elements to avoid potentially obstructing garbage collection of otherwise unreferenced objects.
-			items[index] = default(TItem);
-			priorities[index] = default(TPriority);
-
-			--count;
-			IncVersion();
-
+			DequeueImpl(out TItem item);
 			return item;
 		}
 
 		/// <summary>
-		/// Returns the item at the front of the queue without removing it.
+		/// Removes the item at the front of the queue if the queue is not empty.
+		/// </summary>
+		/// <param name="item">The item removed from the front of the queue, or default(<typeparamref name="TItem"/>) if the queue is empty.</param>
+		/// <returns>True if the queue was not empty, otherwise false.</returns>
+		public bool TryDequeue(out TItem item)
+		{
+			if (count == 0)
+			{
+				item = default(TItem);
+				return false;
+			}
+			else
+			{
+				DequeueImpl(out item);
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// Retrieves the item at the front of the queue without removing it.
 		/// </summary>
 		/// <returns>The item at the front of the queue.</returns>
 		/// <exception cref="InvalidOperationException"></exception>
@@ -127,6 +152,26 @@ namespace Utilities.Collections
 			int index = count - 1;
 			TItem item = items[index];
 			return item;
+		}
+
+		/// <summary>
+		/// Retrieves the item at the front of the queue if the queue is not empty.
+		/// </summary>
+		/// <param name="item">The item at the front of the queue, or default(<typeparamref name="TItem"/>) if the queue is empty.</param>
+		/// <returns></returns>
+		public bool TryPeek(out TItem item)
+		{
+			if (count == 0)
+			{
+				item = default(TItem);
+				return false;
+			}
+			else
+			{
+				int index = count - 1;
+				item = items[index];
+				return true;
+			}
 		}
 
 		/// <summary>

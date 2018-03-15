@@ -1,12 +1,40 @@
 ﻿using System;
+using System.Threading;
 
-namespace Utilities
+namespace Dome
 {
 	/// <summary>
 	/// Handy methods for working with arrays.
 	/// </summary>
 	public static class ArrayUtils
 	{
+		private static class EmptyArray<T>
+		{
+			private static volatile T[] value = null;
+
+			public static T[] Value
+			{
+				get
+				{
+					Thread.MemoryBarrier();
+					if (value == null)
+					{
+						var array = new T[0];
+						Interlocked.CompareExchange(ref value, array, null);
+					}
+
+					return value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns a lazily initialized cached instance of an empty array of type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="T">The element type of the array.</typeparam>
+		/// <returns>The empty array.</returns>
+		public static T[] GetEmpty<T>() => EmptyArray<T>.Value;
+
 		/// <summary>
 		/// Efficiently inserts a value into an array while resizing it.
 		/// </summary>
@@ -51,7 +79,7 @@ namespace Utilities
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
 		/// <exception cref="ArgumentException"></exception>
-		public static void Insert<T>(T[] array, int count, int index, T value)
+		public static void Insert<T>(this T[] array, int count, int index, T value)
 		{
 			if (array == null)
 				throw new ArgumentNullException(nameof(array));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Utilities.Collections
+namespace Dome.Collections
 {
 	/// <summary>
 	/// Handy methods for working with lists.

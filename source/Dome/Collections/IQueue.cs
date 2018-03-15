@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 
-namespace Dome
+namespace Dome.Collections
 {
-	public interface IQueue<T> : IEnumerable<T>
+	public interface IQueue<T> : IReadOnlyCollection<T>
 	{
+		void Enqueue(T item);
 		T Peek();
-		T Pop();
+		T Dequeue();
 		bool TryPeek(out T result);
-		bool TryPop(out T result);
+		bool TryDequeue(out T result);
 	}
 }

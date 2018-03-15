@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Dome
+namespace Dome.Collections
 {
-	public interface IStack<T> : IEnumerable<T>
+	public interface IStack<T> : IReadOnlyCollection<T>
 	{
+		void Push(T item);
 		T Peek();
 		T Pop();
 		bool TryPeek(out T result);
