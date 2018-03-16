@@ -8,7 +8,7 @@ namespace Dome.Collections
 	/// </summary>
 	public static class ListUtils
 	{
-		private static int LowerBoundSearchImpl<T>(IReadOnlyList<T> list, int index, int length, T value, IComparer<T> comparer)
+		private static int LowerBoundSearchImpl<T>(IReadOnlyList<T> list, int index, int length, ref T value, IComparer<T> comparer)
 		{
 			if (comparer == null)
 			{
@@ -62,7 +62,7 @@ namespace Dome.Collections
 			if (index + length > list.Count)
 				throw new ArgumentException($"{nameof(index)} and {nameof(length)} define a range that exceeds beyond the size of {nameof(list)}.");
 
-			int lowerBound = LowerBoundSearchImpl(list, index, length, value, comparer);
+			int lowerBound = LowerBoundSearchImpl(list, index, length, ref value, comparer);
 			return lowerBound;
 		}
 
@@ -80,8 +80,109 @@ namespace Dome.Collections
 			if (list == null)
 				throw new ArgumentNullException(nameof(list));
 
-			int lowerBound = LowerBoundSearchImpl(list, 0, list.Count, value, comparer);
+			int lowerBound = LowerBoundSearchImpl(list, 0, list.Count, ref value, comparer);
 			return lowerBound;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="InvalidOperationException" />
+		public static T PeekLast<T>(this IList<T> list)
+		{
+			if (list == null)
+				throw new ArgumentNullException(nameof(list));
+
+			int index = list.Count - 1;
+			if (index < 0)
+				throw new InvalidOperationException(ExceptionMessages.CollectionIsEmpty);
+			else
+				return list[index];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="InvalidOperationException" />
+		/// <exception cref="NotSupportedException" />
+		public static T PopLast<T>(this IList<T> list)
+		{
+			if (list == null)
+				throw new ArgumentNullException(nameof(list));
+
+			int index = list.Count - 1;
+			if (index < 0)
+			{
+				throw new InvalidOperationException(ExceptionMessages.CollectionIsEmpty);
+			}
+			else
+			{
+				T item = list[index];
+				list.RemoveAt(index);
+				return item;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		public static bool TryPeekLast<T>(this IList<T> list, out T result)
+		{
+			if (list == null)
+				throw new ArgumentNullException(nameof(list));
+
+			int index = list.Count - 1;
+			if (index < 0)
+			{
+				result = default(T);
+				return false;
+			}
+			else
+			{
+				result = list[index];
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="NotSupportedException" />
+		public static bool TryPopLast<T>(this IList<T> list, out T result)
+		{
+			if (list == null)
+				throw new ArgumentNullException(nameof(list));
+
+			int index = list.Count - 1;
+			if (index < 0)
+			{
+				result = default(T);
+				return false;
+			}
+			else
+			{
+				result = list[index];
+				list.RemoveAt(index);
+				return true;
+			}
 		}
 	}
 }

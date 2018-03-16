@@ -13,9 +13,13 @@ namespace Dome
 		/// <typeparam name="T">The type of the target.</typeparam>
 		/// <param name="reference"></param>
 		/// <param name="factoryMethod">The delegate to invoke to create a new target if neccessary. If this is null, then a target is instantiated via <typeparamref name="T" />'s public default constructor.</param>
+		/// <exception cref="ArgumentNullException" />
 		/// <exception cref="MissingMethodException" />
 		public static T GetLazilyInitializedTarget<T>(this WeakReference<T> reference, Func<T> factoryMethod = null) where T : class
 		{
+			if (reference == null)
+				throw new ArgumentNullException(nameof(reference));
+
 			if (!reference.TryGetTarget(out T target))
 			{
 				if (factoryMethod == null)
