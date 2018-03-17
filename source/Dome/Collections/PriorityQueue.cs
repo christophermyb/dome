@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Dome.Collections
 {
@@ -35,8 +36,7 @@ namespace Dome.Collections
 			}
 			else
 			{
-				priorities = ArrayUtils.GetEmpty<TPriority>();
-				items = ArrayUtils.GetEmpty<TItem>();
+				Reset();
 			}
 		}
 
@@ -52,10 +52,40 @@ namespace Dome.Collections
 		/// </summary>
 		public IComparer<TPriority> PriorityComparer => priorityComparer;
 
+		private void Reset()
+		{
+			Debug.Assert(count == 0);
+
+			priorities = ArrayUtils.GetEmpty<TPriority>();
+			items = ArrayUtils.GetEmpty<TItem>();
+		}
+
 		/// <summary>
 		/// The current capacity of the queue. The capacity will increase automatically if an item is added to the queue when it is full.
 		/// </summary>
-		public int Capacity => items.Length;
+		/// <exception cref="ArgumentOutOfRangeException" />
+		public int Capacity
+		{
+			get => items.Length;
+			set
+			{
+				if (value != items.Length)
+				{
+					if (value < count)
+						throw new ArgumentOutOfRangeException(ExceptionMessages.CapacityMayNotBeLessThanCount);
+
+					if (value > 0)
+					{
+						ArrayUtils.Resize(ref priorities, count, value);
+						ArrayUtils.Resize(ref items, count, value);
+					}
+					else
+					{
+						Reset();
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// The number of items in the queue.
@@ -97,10 +127,10 @@ namespace Dome.Collections
 			get
 			{
 				if (index < 0)
-					throw new ArgumentOutOfRangeException(nameof(index), ExceptionMessages.ArgumentMayNotBeNegative);
+					throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMayNotBeNegative);
 
 				if (index >= count)
-					throw new ArgumentOutOfRangeException(nameof(index), ExceptionMessages.ArgumentMustBeLessThanCount);
+					throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMustBeLessThanCount);
 
 				int arrayIndex = count - index - 1;
 				return items[arrayIndex];

@@ -34,12 +34,33 @@ namespace Dome.Collections
 		public RingBuffer() : this(0)
 		{ }
 
-		public int Capacity => items.Length;
 		public int Count => count;
 		public void AddLast(T item) => AddLastImpl(ref item);
 		public bool Contains(T item, IEqualityComparer<T> comparer = null) => ContainsImpl(ref item, comparer);
 		public int IndexOf(T item, IEqualityComparer<T> comparer = null) => IndexOfImpl(ref item, comparer);
 		public bool Remove(T item, IEqualityComparer<T> comparer = null) => RemoveImpl(ref item, comparer);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException" />
+		public int Capacity
+		{
+			get => items.Length;
+			set
+			{
+				if (value != items.Length)
+				{
+					if (value < count)
+						throw new ArgumentOutOfRangeException(ExceptionMessages.CapacityMayNotBeLessThanCount);
+
+					if (value > 0)
+						ArrayUtils.Resize(ref items, count, value);
+					else
+						items = ArrayUtils.GetEmpty<T>();
+				}
+			}
+		}
 
 		private void IncVersion()
 		{

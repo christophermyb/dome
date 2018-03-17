@@ -116,6 +116,19 @@ namespace Dome
 			return -1;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="array"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="length"></param>
+		/// <param name="comparer"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="ArgumentOutOfRangeException" />
+		/// <exception cref="ArgumentException" />
 		public static int LastIndexOf<T>(this T[] array, T value, int index, int length, IEqualityComparer<T> comparer = null)
 		{
 			if (array == null)
@@ -133,6 +146,17 @@ namespace Dome
 			return LastIndexOfImpl(array, ref value, index, length, comparer);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="array"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="comparer"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="ArgumentOutOfRangeException" />
 		public static int LastIndexOf<T>(this T[] array, T value, int index = 0, IEqualityComparer<T> comparer = null)
 		{
 			if (array == null)
@@ -143,6 +167,28 @@ namespace Dome
 
 			int length = array.Length - index;
 			return LastIndexOfImpl(array, ref value, index, length, comparer);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="array"></param>
+		/// <param name="count"></param>
+		/// <param name="newSize"></param>
+		/// <exception cref="ArgumentOutOfRangeException" />
+		/// <exception cref="ArgumentException" />
+		public static void Resize<T>(ref T[] array, int count, int newSize)
+		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException(nameof(count), count, ExceptionMessages.ArgumentMayNotBeNegative);
+
+			if (newSize < count)
+				throw new ArgumentException($"{nameof(newSize)} ({newSize}) cannot be smaller than {nameof(count)} ({count}).");
+
+			var newArray = new T[newSize];
+			Array.Copy(array, newArray, count);
+			array = newArray;
 		}
 	}
 }

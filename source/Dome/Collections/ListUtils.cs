@@ -16,7 +16,7 @@ namespace Dome.Collections
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException" />
 		/// <exception cref="ArgumentException" />
-		public static ListReverser<T> Reverse<T>(this IList<T> list)
+		public static ListReverser<T> Reverse<T>(this List<T> list)
 		{
 			if (list == null)
 				throw new ArgumentNullException(nameof(list));

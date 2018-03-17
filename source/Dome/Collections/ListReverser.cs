@@ -7,9 +7,9 @@ namespace Dome.Collections
 {
 	public class ListReverser<T> : IReadOnlyList<T>, IStack<T>
 	{
-		private readonly IList<T> list;
+		private readonly List<T> list;
 
-		internal ListReverser(IList<T> list)
+		internal ListReverser(List<T> list)
 		{
 			Debug.Assert(list != null);
 			this.list = list;

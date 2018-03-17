@@ -16,5 +16,6 @@ namespace Dome
 
 		public static readonly string ArgumentMustBeLessThanCount = $"Argument must be less than {nameof(ICollection.Count)}.";
 		public static readonly string ArgumentMayNotBeLargerThanCount = $"Argument may not be larger than {nameof(ICollection.Count)}.";
+		public static readonly string CapacityMayNotBeLessThanCount = $"{nameof(CollectionBase.Capacity)} may not be less than {nameof(ICollection.Count)}.";
 	}
 }
