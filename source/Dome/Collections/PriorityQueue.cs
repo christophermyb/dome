@@ -9,7 +9,7 @@ namespace Dome.Collections
 	/// </summary>
 	/// <typeparam name="TItem">The type of the items in the queue.</typeparam>
 	/// <typeparam name="TPriority"></typeparam>
-	public class PriorityQueue<TItem, TPriority> : IQueue<TItem>
+	public class PriorityQueue<TItem, TPriority> : IQueue<TItem>, IReadOnlyList<TItem>
 	{
 		private readonly IComparer<TPriority> priorityComparer;
 
@@ -85,6 +85,26 @@ namespace Dome.Collections
 
 			++count;
 			IncVersion();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <exception cref="ArgumentOutOfRangeException" />
+		public TItem this[int index]
+		{
+			get
+			{
+				if (index < 0)
+					throw new ArgumentOutOfRangeException(nameof(index), ExceptionMessages.ArgumentMayNotBeNegative);
+
+				if (index >= count)
+					throw new ArgumentOutOfRangeException(nameof(index), ExceptionMessages.ArgumentMustBeLessThanCount);
+
+				int arrayIndex = count - index - 1;
+				return items[arrayIndex];
+			}
 		}
 
 		void IQueue<TItem>.Enqueue(TItem item)
