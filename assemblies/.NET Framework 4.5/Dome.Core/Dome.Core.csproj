@@ -46,6 +46,9 @@
     <Compile Include="..\..\..\source\Dome\ArrayUtils.cs">
       <Link>ArrayUtils.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\source\Dome\Collections\CollectionUtils.cs">
+      <Link>Collections\CollectionUtils.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\source\Dome\Collections\DescendingComparer.cs">
       <Link>Collections\DescendingComparer.cs</Link>
     </Compile>
@@ -55,11 +58,11 @@
     <Compile Include="..\..\..\source\Dome\Collections\IStack.cs">
       <Link>Collections\IStack.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\source\Dome\Collections\ListReverser.cs">
+      <Link>Collections\ListReverser.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\source\Dome\Collections\ListUtils.cs">
       <Link>Collections\ListUtils.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\source\Dome\Collections\ListWrapper.cs">
-      <Link>Collections\ListWrapper.cs</Link>
     </Compile>
     <Compile Include="..\..\..\source\Dome\Collections\PriorityQueue.cs">
       <Link>Collections\PriorityQueue.cs</Link>
@@ -67,14 +70,17 @@
     <Compile Include="..\..\..\source\Dome\Collections\QueueWrapper.cs">
       <Link>Collections\QueueWrapper.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\source\Dome\Collections\RingBuffer.cs">
+      <Link>Collections\RingBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\source\Dome\Collections\StackWrapper.cs">
       <Link>Collections\StackWrapper.cs</Link>
     </Compile>
     <Compile Include="..\..\..\source\Dome\ExceptionMessages.cs">
       <Link>ExceptionMessages.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\source\Dome\Singleton.cs">
-      <Link>Singleton.cs</Link>
+    <Compile Include="..\..\..\source\Dome\MathUtils.cs">
+      <Link>MathUtils.cs</Link>
     </Compile>
     <Compile Include="..\..\..\source\Dome\WeakReferenceUtils.cs">
       <Link>WeakReferenceUtils.cs</Link>

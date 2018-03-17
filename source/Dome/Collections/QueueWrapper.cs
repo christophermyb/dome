@@ -20,11 +20,28 @@ namespace Dome.Collections
 
 		public int Count => queue.Count;
 		public void Clear() => queue.Clear();
-		public bool Contains(T item) => queue.Contains(item);
 		public void Enqueue(T item) => queue.Enqueue(item);
 		public T[] ToArray() => queue.ToArray();
 		public void TrimExcess() => queue.TrimExcess();
 		public Queue<T>.Enumerator GetEnumerator() => queue.GetEnumerator();
+
+		public bool Contains(T item, IEqualityComparer<T> comparer = null)
+		{
+			if (comparer == null)
+			{
+				return queue.Contains(item);
+			}
+			else
+			{
+				foreach (T value in queue)
+				{
+					if (comparer.Equals(item, value))
+						return true;
+				}
+
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// 

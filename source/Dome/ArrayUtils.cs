@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Dome
@@ -55,10 +56,10 @@ namespace Dome
 				throw new ArgumentException($"{nameof(size)} must be larger than the length of {nameof(array)} by at least 1.");
 
 			if (index < 0)
-				throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMustNotBeNegative);
+				throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMayNotBeNegative);
 
 			if (index > array.Length)
-				throw new ArgumentException($"{nameof(index)} must not be larger than the length of {nameof(array)}.");
+				throw new ArgumentException($"{nameof(index)} may not be larger than the length of {nameof(array)}.");
 
 			var newArray = new T[size];
 			Array.Copy(array, newArray, index);
@@ -85,19 +86,63 @@ namespace Dome
 				throw new ArgumentNullException(nameof(array));
 
 			if (count < 0)
-				throw new ArgumentOutOfRangeException(nameof(count), count, ExceptionMessages.ArgumentMustNotBeNegative);
+				throw new ArgumentOutOfRangeException(nameof(count), count, ExceptionMessages.ArgumentMayNotBeNegative);
 
 			if (count >= array.Length)
 				throw new ArgumentException($"{nameof(count)} must be smaller than the length of {nameof(array)}.");
 
 			if (index < 0)
-				throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMustNotBeNegative);
+				throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMayNotBeNegative);
 
 			if (index > count)
-				throw new ArgumentException($"{nameof(index)} must not be larger than {nameof(count)}.");
+				throw new ArgumentException($"{nameof(index)} may not be larger than {nameof(count)}.");
 
 			Array.Copy(array, index, array, index + 1, count - index);
 			array[index] = value;
+		}
+
+		private static int LastIndexOfImpl<T>(T[] array, ref T value, int index, int length, IEqualityComparer<T> comparer)
+		{
+			if (comparer == null)
+				comparer = EqualityComparer<T>.Default;
+
+			for (int i = index + length - 1; i >= index; --i)
+			{
+				T item = array[i];
+				if (comparer.Equals(value, item))
+					return i;
+			}
+
+			return -1;
+		}
+
+		public static int LastIndexOf<T>(this T[] array, T value, int index, int length, IEqualityComparer<T> comparer = null)
+		{
+			if (array == null)
+				throw new ArgumentNullException(nameof(array));
+
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMayNotBeNegative);
+
+			if (length < 0)
+				throw new ArgumentOutOfRangeException(nameof(length), length, ExceptionMessages.ArgumentMayNotBeNegative);
+
+			if (index + length > array.Length)
+				throw new ArgumentException($"{nameof(index)} and {nameof(length)} do not define a valid region of the array.");
+
+			return LastIndexOfImpl(array, ref value, index, length, comparer);
+		}
+
+		public static int LastIndexOf<T>(this T[] array, T value, int index = 0, IEqualityComparer<T> comparer = null)
+		{
+			if (array == null)
+				throw new ArgumentNullException(nameof(array));
+
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.ArgumentMayNotBeNegative);
+
+			int length = array.Length - index;
+			return LastIndexOfImpl(array, ref value, index, length, comparer);
 		}
 	}
 }

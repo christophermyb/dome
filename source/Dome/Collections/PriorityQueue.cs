@@ -16,8 +16,7 @@ namespace Dome.Collections
 		private TPriority[] priorities;
 		private TItem[] items;
 
-		private int count = 0;
-		private int version = 0;
+		private int count = 0, version = 0;
 
 		/// <param name="capacity">The initial capacity of the queue.</param>
 		/// <param name="priorityComparer">The comparer to use to order items in the queue by their respective priorities.</param>
@@ -25,7 +24,7 @@ namespace Dome.Collections
 		public PriorityQueue(int capacity, IComparer<TPriority> priorityComparer = null)
 		{
 			if (capacity < 0)
-				throw new ArgumentOutOfRangeException(nameof(capacity), capacity, ExceptionMessages.ArgumentMustNotBeNegative);
+				throw new ArgumentOutOfRangeException(nameof(capacity), capacity, ExceptionMessages.ArgumentMayNotBeNegative);
 
 			this.priorityComparer = priorityComparer ?? Comparer<TPriority>.Default;
 
@@ -98,7 +97,6 @@ namespace Dome.Collections
 			int index = count - 1;
 			item = items[index];
 
-			// Clear these array elements to avoid potentially obstructing garbage collection of otherwise unreferenced objects.
 			items[index] = default(TItem);
 			priorities[index] = default(TPriority);
 
@@ -150,8 +148,7 @@ namespace Dome.Collections
 				throw new InvalidOperationException(ExceptionMessages.CollectionIsEmpty);
 
 			int index = count - 1;
-			TItem item = items[index];
-			return item;
+			return items[index];
 		}
 
 		/// <summary>
@@ -186,6 +183,26 @@ namespace Dome.Collections
 			IncVersion();
 		}
 
+		public bool Contains(TItem item, IEqualityComparer<TItem> comparer = null)
+		{
+			int index = items.LastIndexOf(item, 0, count, comparer);
+			return index >= 0;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="array"></param>
+		/// <param name="arrayIndex"></param>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="ArgumentOutOfRangeException" />
+		/// <exception cref="ArgumentException" />
+		public void CopyTo(TItem[] array, int arrayIndex = 0)
+		{
+			CollectionUtils.CheckCopyToArguments(array, arrayIndex, count);
+			Array.Copy(items, 0, array, arrayIndex, count);
+		}
+
 		private void IncVersion()
 		{
 			version = unchecked(version + 1);
@@ -212,26 +229,28 @@ namespace Dome.Collections
 			/// Moves the enumerator to the next item in the queue. The behaviour of this method is undefined if it is called after it has returned false.
 			/// </summary>
 			/// <returns>False if all of the items in the queue have been enumerated, otherwise true.</returns>
-			/// <exception cref="InvalidOperationException"></exception>
+			/// <exception cref="NullReferenceException">If the enumerator was created directly instead of being create by the collection.</exception>
+			/// <exception cref="InvalidOperationException">If the underlying collection has changed since the enumerator was created or reset.</exception>
 			public bool MoveNext()
 			{
 				if (version != queue.version)
 					throw new InvalidOperationException(ExceptionMessages.CollectionContentsHaveChanged);
 
 				--index;
-				bool isValid = index >= 0;
-				return isValid;
+				bool valid = index >= 0;
+				return valid;
 			}
 
 			/// <summary>
 			/// The item in the queue that the enumerator is currently on.
 			/// The behaviour of this property is undefined if it is invoked before calling <see cref="MoveNext"/> for first the time or after <see cref="MoveNext"/> has returned false.
 			/// </summary>
+			/// <exception cref="NullReferenceException">If the enumerator was created directly instead of being create by the collection.</exception>
 			public TItem Current => queue.items[index];
 
 			/// <summary>
 			/// Frees the resources in use by the enumerator.
-			/// The behaviour of the enumerator is undefined if it used after this method has been called.
+			/// The behaviour of the enumerator is undefined if it is used after this method has been called.
 			/// </summary>
 			public void Dispose()
 			{
@@ -241,6 +260,7 @@ namespace Dome.Collections
 			/// <summary>
 			/// Resets the enumerator to the position before the first item in the queue.
 			/// </summary>
+			/// <exception cref="NullReferenceException">If the enumerator was created directly instead of being create by the collection.</exception>
 			public void Reset()
 			{
 				index = queue.count;

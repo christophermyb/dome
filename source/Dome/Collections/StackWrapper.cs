@@ -20,11 +20,28 @@ namespace Dome.Collections
 
 		public int Count => stack.Count;
 		public void Clear() => stack.Clear();
-		public bool Contains(T item) => stack.Contains(item);
 		public void Push(T item) => stack.Push(item);
 		public T[] ToArray() => stack.ToArray();
 		public void TrimExcess() => stack.TrimExcess();
 		public Stack<T>.Enumerator GetEnumerator() => stack.GetEnumerator();
+
+		public bool Contains(T item, IEqualityComparer<T> comparer = null)
+		{
+			if (comparer == null)
+			{
+				return stack.Contains(item);
+			}
+			else
+			{
+				foreach (T value in stack)
+				{
+					if (comparer.Equals(item, value))
+						return true;
+				}
+
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// 
@@ -65,8 +82,8 @@ namespace Dome.Collections
 
 		public static bool operator !=(StackWrapper<T> a, StackWrapper<T> b) => !(a == b);
 
-		IEnumerator<T> IEnumerable<T>.GetEnumerator() => stack.GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => stack.GetEnumerator();
+		IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 		public bool TryPeek(out T result)
 		{

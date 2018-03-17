@@ -8,12 +8,27 @@ namespace Dome.Collections
 	/// </summary>
 	public static class ListUtils
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException" />
+		/// <exception cref="ArgumentException" />
+		public static ListReverser<T> Reverse<T>(this IList<T> list)
+		{
+			if (list == null)
+				throw new ArgumentNullException(nameof(list));
+
+			var reverser = new ListReverser<T>(list);
+			return reverser;
+		}
+
 		private static int LowerBoundSearchImpl<T>(IReadOnlyList<T> list, int index, int length, ref T value, IComparer<T> comparer)
 		{
 			if (comparer == null)
-			{
 				comparer = Comparer<T>.Default;
-			}
 
 			int endIndexExcl = index + length;
 			while (length > 0)
@@ -36,7 +51,7 @@ namespace Dome.Collections
 		}
 
 		/// <summary>
-		/// Uses a modified binary search to find the first occurrence of a given value within a sorted list.
+		/// Uses a simplified binary search to find the first occurrence of a given value within a sorted list.
 		/// </summary>
 		/// <typeparam name="T">The type of the list's items.</typeparam>
 		/// <param name="list">The sorted list to search.</param>
@@ -54,20 +69,19 @@ namespace Dome.Collections
 				throw new ArgumentNullException(nameof(list));
 
 			if (index < 0)
-				throw new ArgumentOutOfRangeException(nameof(index), ExceptionMessages.ArgumentMustNotBeNegative);
+				throw new ArgumentOutOfRangeException(nameof(index), ExceptionMessages.ArgumentMayNotBeNegative);
 
 			if (length < 0)
-				throw new ArgumentOutOfRangeException(nameof(length), ExceptionMessages.ArgumentMustNotBeNegative);
+				throw new ArgumentOutOfRangeException(nameof(length), ExceptionMessages.ArgumentMayNotBeNegative);
 
 			if (index + length > list.Count)
 				throw new ArgumentException($"{nameof(index)} and {nameof(length)} define a range that exceeds beyond the size of {nameof(list)}.");
 
-			int lowerBound = LowerBoundSearchImpl(list, index, length, ref value, comparer);
-			return lowerBound;
+			return LowerBoundSearchImpl(list, index, length, ref value, comparer);
 		}
 
 		/// <summary>
-		/// Uses a modified binary search to find the first occurrence of a given value within a sorted list.
+		/// Uses a simplified binary search to find the first occurrence of a given value within a sorted list.
 		/// </summary>
 		/// <typeparam name="T">The type of the list's items.</typeparam>
 		/// <param name="list">The sorted list to search.</param>
@@ -80,8 +94,7 @@ namespace Dome.Collections
 			if (list == null)
 				throw new ArgumentNullException(nameof(list));
 
-			int lowerBound = LowerBoundSearchImpl(list, 0, list.Count, ref value, comparer);
-			return lowerBound;
+			return LowerBoundSearchImpl(list, 0, list.Count, ref value, comparer);
 		}
 
 		/// <summary>
